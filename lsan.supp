@@ -1,0 +1,4 @@
+# LeakSanitizer suppressions for third-party code only. ONNX Runtime keeps process-lifetime
+# allocations (its global thread pools, kernel registries, the Env singleton) that it never frees
+# at exit; LSan reports them as leaks. Nothing from libedgeinfer_* is suppressed.
+leak:libonnxruntime.so
