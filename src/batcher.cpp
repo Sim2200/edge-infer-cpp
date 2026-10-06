@@ -1,6 +1,8 @@
 #include "edgeinfer/batcher.hpp"
 
 #include <exception>
+#include <stdexcept>
+#include <string>
 
 namespace edgeinfer {
 
@@ -72,6 +74,12 @@ void Batcher::worker_loop() {
     }
     try {
       std::vector<float> logits = run_(payloads);
+      // Never trust the model's output size: a short result would make the split below read past
+      // the end of `logits` (AddressSanitizer caught exactly that with a misbehaving fake model).
+      if (logits.size() != batch.size() * out_dim_) {
+        throw std::runtime_error("model returned " + std::to_string(logits.size()) + " values, expected " +
+                                 std::to_string(batch.size() * out_dim_));
+      }
       const auto end = std::chrono::steady_clock::now();
       const double infer_ms = ms_between(start, end);
       for (std::size_t i = 0; i < batch.size(); ++i) {
