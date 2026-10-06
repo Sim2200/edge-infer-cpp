@@ -1,0 +1,168 @@
+{
+  "intra_op_threads": 4,
+  "cpuset": "0-3",
+  "models": [
+    {
+      "intra_op_threads": 4,
+      "load_ms": 245.626367,
+      "mode": "latency",
+      "model": "mobilenet_v3_large_fp32",
+      "peak_rss_mib": 151.65234375,
+      "rows": [
+        {
+          "batch": 1,
+          "items_per_s": 63.71273609311846,
+          "iters": 40,
+          "p50_ms": 15.695449,
+          "p95_ms": 29.600695,
+          "per_item_ms": 15.695449
+        },
+        {
+          "batch": 8,
+          "items_per_s": 129.93803514979777,
+          "iters": 40,
+          "p50_ms": 61.567808,
+          "p95_ms": 86.331259,
+          "per_item_ms": 7.695976
+        }
+      ],
+      "rss_before_load_mib": 14.02734375,
+      "file_mib": 20.9
+    },
+    {
+      "intra_op_threads": 4,
+      "load_ms": 134.892895,
+      "mode": "latency",
+      "model": "mobilenet_v3_large_int8",
+      "peak_rss_mib": 57.88671875,
+      "rows": [
+        {
+          "batch": 1,
+          "items_per_s": 99.05752706449755,
+          "iters": 40,
+          "p50_ms": 10.095144,
+          "p95_ms": 12.875449,
+          "per_item_ms": 10.095144
+        },
+        {
+          "batch": 8,
+          "items_per_s": 193.5906398151287,
+          "iters": 40,
+          "p50_ms": 41.324312,
+          "p95_ms": 56.167469,
+          "per_item_ms": 5.165539
+        }
+      ],
+      "rss_before_load_mib": 13.875,
+      "file_mib": 5.7
+    },
+    {
+      "intra_op_threads": 4,
+      "load_ms": 600.140641,
+      "mode": "latency",
+      "model": "resnet50_v2_fp32",
+      "peak_rss_mib": 292.4140625,
+      "rows": [
+        {
+          "batch": 1,
+          "items_per_s": 20.836972423746424,
+          "iters": 40,
+          "p50_ms": 47.991617,
+          "p95_ms": 80.878853,
+          "per_item_ms": 47.991617
+        },
+        {
+          "batch": 8,
+          "items_per_s": 30.534119691749208,
+          "iters": 40,
+          "p50_ms": 262.001986,
+          "p95_ms": 366.30429,
+          "per_item_ms": 32.75024825
+        }
+      ],
+      "rss_before_load_mib": 13.53515625,
+      "file_mib": 97.4
+    },
+    {
+      "intra_op_threads": 4,
+      "load_ms": 197.626658,
+      "mode": "latency",
+      "model": "resnet50_v2_int8",
+      "peak_rss_mib": 92.6640625,
+      "rows": [
+        {
+          "batch": 1,
+          "items_per_s": 42.82370060580548,
+          "iters": 40,
+          "p50_ms": 23.351555,
+          "p95_ms": 27.914028,
+          "per_item_ms": 23.351555
+        },
+        {
+          "batch": 8,
+          "items_per_s": 58.416321689687436,
+          "iters": 40,
+          "p50_ms": 136.948027,
+          "p95_ms": 195.032933,
+          "per_item_ms": 17.118503375
+        }
+      ],
+      "rss_before_load_mib": 13.734375,
+      "file_mib": 24.9
+    },
+    {
+      "intra_op_threads": 4,
+      "load_ms": 1052.813009,
+      "mode": "latency",
+      "model": "distilbert_sst2_fp32",
+      "peak_rss_mib": 472.234375,
+      "rows": [
+        {
+          "batch": 1,
+          "items_per_s": 17.4252253521625,
+          "iters": 40,
+          "p50_ms": 57.388067,
+          "p95_ms": 112.158219,
+          "per_item_ms": 57.388067
+        },
+        {
+          "batch": 8,
+          "items_per_s": 20.558775755125183,
+          "iters": 40,
+          "p50_ms": 389.128229,
+          "p95_ms": 627.354027,
+          "per_item_ms": 48.641028625
+        }
+      ],
+      "rss_before_load_mib": 13.78515625,
+      "file_mib": 255.4
+    },
+    {
+      "intra_op_threads": 4,
+      "load_ms": 446.4811,
+      "mode": "latency",
+      "model": "distilbert_sst2_int8",
+      "peak_rss_mib": 177.625,
+      "rows": [
+        {
+          "batch": 1,
+          "items_per_s": 19.94388429164628,
+          "iters": 40,
+          "p50_ms": 50.140684,
+          "p95_ms": 58.225829,
+          "per_item_ms": 50.140684
+        },
+        {
+          "batch": 8,
+          "items_per_s": 20.58753436426201,
+          "iters": 40,
+          "p50_ms": 388.584658,
+          "p95_ms": 592.581729,
+          "per_item_ms": 48.57308225
+        }
+      ],
+      "rss_before_load_mib": 13.71875,
+      "file_mib": 64.1
+    }
+  ]
+}

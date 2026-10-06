@@ -1,0 +1,1 @@
+{"kind": "text", "model": "models/distilbert_sst2_fp32/model.onnx", "n": 8, "max_abs_logit_diff": 0.0, "argmax_agree": 8, "argmax_total": 8}
