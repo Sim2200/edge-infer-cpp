@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Build (release)
+        run: cmake --preset release >/dev/null && cmake --build --preset release
+
+      - name: Test (release)
+        run: ctest --preset release
+
+  sanitizers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Build (asan)
+        run: cmake --preset asan >/dev/null && cmake --build --preset asan
+
+      - name: Test (asan)
+        run: ctest --preset asan
+
+  arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Build (release)
+        run: cmake --preset release >/dev/null && cmake --build --preset release
+
+      - name: Test (release)
+        run: ctest --preset release
+
+      - name: Benchmark
+        run: ./build/release/bench/edgeinfer_bench --benchmark_filter=Preprocess --benchmark_format=json --benchmark_out=bench-arm64.json
+
+      - name: Upload benchmark
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-arm64
+          path: bench-arm64.json
