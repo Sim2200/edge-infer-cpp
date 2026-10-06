@@ -132,8 +132,10 @@ def load(quick: bool) -> None:
     sustained goodput, and the load levels are multiples of that."""
     seconds = 8 if quick else 20
     out = {"cpuset": SUT_CPUS, "seconds_per_point": seconds, "models": {}}
-    configs = {"batching_off": dict(max_batch=1, wait_us=0, workers=2, intra=2),
-               "batching_on": dict(max_batch=16, wait_us=4000, workers=2, intra=2)}
+    # 4 workers x 1 intra-op thread: the best (callers x threads) cell of results/threads.json on 4 cores.
+    # results/load_workers2_intra2.json keeps the first run with 2 x 2 for comparison.
+    configs = {"batching_off": dict(max_batch=1, wait_us=0, workers=4, intra=1),
+               "batching_on": dict(max_batch=16, wait_us=4000, workers=4, intra=1)}
     for model, kind in (("resnet50_v2_int8", "vision"), ("distilbert_sst2_int8", "text")):
         start_server(model, **configs["batching_off"])
         probe = loadgen(400, 6, kind)
@@ -160,10 +162,12 @@ def micro() -> None:
 
 
 def parity() -> None:
-    for model, kind in (("resnet50_v2_int8", "vision"), ("distilbert_sst2_int8", "text")):
+    for model, kind in (("resnet50_v2_fp32", "vision"), ("resnet50_v2_int8", "vision"), ("distilbert_sst2_fp32", "text"),
+                        ("distilbert_sst2_int8", "text")):
         start_server(model, max_batch=8, wait_us=2000, workers=1, intra=2)
+        extra = ["--images-dir", "models/parity_images", "--n", "32"] if kind == "vision" else []
         drun(["python3", "tools/parity.py", "--url", "http://edge-sut:8080", "--model", f"models/{model}/model.onnx", "--kind", kind,
-              "--out", f"/src/results/parity_{model}.json"], cpus=CLIENT_CPUS, capture=False)
+              "--out", f"/src/results/parity_{model}.json", *extra], cpus=CLIENT_CPUS, capture=False)
     subprocess.run(["docker", "rm", "-f", "edge-sut"], capture_output=True)
 
 
@@ -174,6 +178,7 @@ def main() -> None:
     ap.add_argument("--no-build", action="store_true")
     a = ap.parse_args()
     RES.mkdir(exist_ok=True)
+    subprocess.run(["docker", "network", "create", NET], capture_output=True)
     if not a.no_build:
         build()
     steps = a.only.split(",")
