@@ -11,6 +11,11 @@
 namespace edgeinfer {
 
 namespace {
+inline float32x4_t widen4(const std::uint8_t* p) {
+  // 8 bytes loaded, low 4 used: u8 -> u16 -> u32 -> f32.
+  return vcvtq_f32_u32(vmovl_u16(vget_low_u16(vmovl_u8(vld1_u8(p)))));
+}
+
 inline float32x4_t lerp4(float32x4_t a, float32x4_t b, float32x4_t w) {
   return vfmaq_f32(a, vsubq_f32(b, a), w);  // a + (b - a) * w
 }
@@ -37,7 +42,7 @@ void preprocess_neon(const ImageView& in, int out_w, int out_h, const Normalize&
     vscale[c] = vdupq_n_f32(sscale[c]);
     vbias[c] = vdupq_n_f32(sbias[c]);
   }
-  alignas(16) float g[4][3][4];
+  alignas(16) std::uint8_t g[4][3][8];  // bytes, widened 4 at a time (see the AVX2 path)
   for (int y = 0; y < out_h; ++y) {
     const AxisMap ym = ys[static_cast<std::size_t>(y)];
     const std::uint8_t* r0 = in.data + static_cast<std::size_t>(ym.i0) * in.stride;
@@ -58,8 +63,8 @@ void preprocess_neon(const ImageView& in, int out_w, int out_h, const Normalize&
       }
       const float32x4_t vwx = vld1q_f32(wx.data() + x);
       for (int c = 0; c < 3; ++c) {
-        const float32x4_t top = lerp4(vld1q_f32(g[0][c]), vld1q_f32(g[1][c]), vwx);
-        const float32x4_t bot = lerp4(vld1q_f32(g[2][c]), vld1q_f32(g[3][c]), vwx);
+        const float32x4_t top = lerp4(widen4(g[0][c]), widen4(g[1][c]), vwx);
+        const float32x4_t bot = lerp4(widen4(g[2][c]), widen4(g[3][c]), vwx);
         const float32x4_t v = lerp4(top, bot, vwy);
         vst1q_f32(dst[c] + x, vfmaq_f32(vbias[c], v, vscale[c]));
       }
